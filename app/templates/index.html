@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yonga-GPT</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    
+    <!-- Font Awesome 6 Solid icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css"  />
+
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <div class="container d-flex">
+            <button class="navbar-toggler d-flex align-items-center d-lg-none" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+
+            <a class="navbar-brand d-none d-lg-block" href="#">
+                <img src="https://www.yongatek.com/Uploads/Original/e62d07192d3d9f69760f21c059292c3a.webp" 
+                alt="logo" 
+                style="width: 150px; height: auto;">
+            </a>
+            
+            <a class="navbar-brand mx-auto d-block d-lg-none" href="#">
+                <img src="https://www.yongatek.com/Uploads/Original/e62d07192d3d9f69760f21c059292c3a.webp" 
+                alt="logo" 
+                style="width: 150px; height: auto;">
+            </a>
+
+            </div>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+
+                    <li class="nav-item dropdown" style="max-height: 38px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Applications
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">Text-to-Text</a>
+                            <a class="dropdown-item" href="#">Sentiment Analysis</a>
+                            <a class="dropdown-item" href="#">News Topic Analysis</a>
+                            <a class="dropdown-item" href="#">Image-to-Text Description</a>
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>  
+    </nav>
+
+    <div class="container my-5">
+        <div class="chat-container">
+            <div class="text-center mb-4">
+                <div class="gif-class">
+                    <img src="../static/comp.gif" alt="Yongatek" width="350" height="320" class="img-fluid">
+                </div>
+                <h2>Ask a question about Yongatek now!</h2>
+            </div>
+
+            <div class="message-container animate__fadeInBottomLeft" style="height: 400px;" id="message-container">
+                <!-- Messages will be added here -->
+            </div>
+            
+
+            <div class="message-input d-flex">
+                <input id="question" type="text" class="form-control" placeholder="You can ask a question about Yongatek..">
+                <button id="send-button" onclick="sendText()" class="btn btn-primary ml-2">Send</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-12 col-md-4 text-center mb-3">
+                    <img src="https://www.yongatek.com/Uploads/Original/e62d07192d3d9f69760f21c059292c3a.webp" 
+                        class="mb-3" 
+                        alt="logo"
+                        style="max-width: 200px;">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="https://www.linkedin.com/company/yongatek/posts/?feedView=all" class="text-white"><img src="../static/instagram-brands-solid.ico" style="height: 18px; width:18px;margin-right: 5px;">Instagram</a></li>
+                        <li><a href="https://www.linkedin.com/company/yongatek/posts/?feedView=all" class="text-white"><img src="../static/linkedin-in-brands-solid_1_.ico" style="height: 18px; width:18px;margin-right: 5px;">LinkedIn</a></li>
+                        <li><a href="https://www.linkedin.com/company/yongatek/posts/?feedView=all" class="text-white"><img src="../static/square-youtube-brands-solid_2_.ico" style="height: 18px; width:18px;margin-right: 5px;">YouTube</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-4 text-center mb-3">
+                    <h5>Contact Information</h5>
+                    <ul class="list-unstyled">
+                        <li>+90 216 504 14 10</li>
+                        <li>Fax: +90 216 504 14 11</li>
+                        <li>info@yongatek.com</li>
+                        <li>Ankara Hacettepe Teknokent, TÜRKİYE</li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-4 text-center mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="https://www.yongatek.com/" class="text-white">Home</a></li>
+                        <li><a href="https://www.yongatek.com/" class="text-white">About Us</a></li>
+                        <li><a href="https://www.yongatek.com/" class="text-white">Services</a></li>
+                        <li><a href="https://www.yongatek.com/" class="text-white">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024, All Rights Reserved by Yongatek</p>
+            </div>
+        </div>
+    </footer>
+    
+
+    <script type='text/javascript' src='../static/js/index.js'></script>
+
+    
+</body>
+</html>
