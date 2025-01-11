@@ -1,0 +1,246 @@
+[project]
+    name = "Model Training"
+    description = "Model training repository"
+    company = "Oguzhan"
+    author = "Mert Oğuzhan"
+
+[logger]
+    filepath="./logs/model_training.log"
+    rotation="50MB"
+
+[classification]
+    [classification.model]
+        model_type = "resnet50" # custom, alexnet, lenet, vgg19, resnet18, resnet34, resnet50, resnet101, resnet152
+        pretrained = true
+        num_classes = 2
+
+        # If model_type is CUSTOM
+        input_shape = [3, 368, 736]  # Input shape for the model (channels, height, width)
+        layers = [
+            # Layer 1: Conv2D + ReLU + MaxPooling
+            {type = "Conv2D", in_channels = 3, filters = 96, kernel_size = 11, stride = 4, padding = 2, activation = "relu"},
+            {type = "MaxPooling2D", pool_size = 3, stride = 2},
+
+            # Layer 2: Conv2D + ReLU + MaxPooling
+            {type = "Conv2D", in_channels = 96, filters = 256, kernel_size = 5, stride = 1, padding = 2, activation = "relu"},
+            {type = "MaxPooling2D", pool_size = 3, stride = 2},
+
+            # Layer 3: Conv2D + ReLU
+            {type = "Conv2D", in_channels = 256, filters = 384, kernel_size = 3, stride = 1, padding = 1, activation = "relu"},
+
+            # Layer 4: Conv2D + ReLU
+            {type = "Conv2D", in_channels = 384, filters = 384, kernel_size = 3, stride = 1, padding = 1, activation = "relu"},
+
+            # Layer 5: Conv2D + ReLU + MaxPooling
+            {type = "Conv2D", in_channels = 384, filters = 256, kernel_size = 3, stride = 1, padding = 1, activation = "relu"},
+            {type = "MaxPooling2D", pool_size = 3, stride = 2},
+
+            # Layer 6: Flatten
+            {type = "Flatten"},
+
+            # Layer 7: Dense (4096 units) + ReLU
+            {type = "Dense", in_features = 56320, units = 4096, activation = "relu"},
+
+            # Layer 8: Dense (4096 units) + ReLU
+            {type = "Dense", in_features = 4096, units = 4096, activation = "relu"},
+
+            # Layer 9: Dense (2 units) + Softmax (for binary classification)
+            {type = "Dense", in_features = 4096, units = 2, activation = "softmax"}
+        ]
+
+    [classification.train]
+        generate_dataset = false
+        image_dir = './datasets/glass_quality_dataset/images/train'
+        label_file = './datasets/glass_quality_dataset/labels/train/train.csv'
+        tensorboard_path = './runs/classification'
+        learning_rate = 0.09
+        epoch_size = 40
+        batch_size = 20
+        resume_training = false
+        checkpoint_path_to_resume = "./datasets/glass_quality_dataset/weights/2024-10-15 142641_chkpt_70_of_80.pth" # ./datasets/weights/2024-09-25 10:33:23_chkpt_10_of_15.pth
+        checkpoint_save_each = 5
+        checkpoint_save_dir = "./datasets/glass_quality_dataset/weights/"
+
+    [classification.inference]
+        model_path = "./datasets/glass_quality_dataset/weights/2024-10-15 142641_chkpt_70_of_80.pth"
+        test_image = "./datasets/glass_quality_dataset/inference_test_image"
+
+    [classification.augmentation]
+        image_label_file_dir= './datasets/glass_quality_dataset/labels/train/train.csv'
+        image_dir= './datasets/glass_quality_dataset/images/train'
+        image_output_dir= './datasets/glass_quality_dataset/images/train_augmented'
+        image_output_label_file_dir= './datasets/glass_quality_dataset/labels/train_augmented'
+        show_image= true
+        save_image= true
+
+        [classification.augmentation.RandomHorizontalFlip]
+            enable=1
+            RandomHorizontalFlip = 50.0 # (RandomHorizontalFlip)-> probability
+        [classification.augmentation.ColorJitter]
+            enable=0
+            brightness=0.6
+            contrast= 0.5
+            saturation=0.1
+            hue=0.2
+        [classification.augmentation.CenterCrop]
+            enable = 0
+            xy = [736,368]
+        [classification.augmentation.Grayscale]
+            enable = 0
+            channel = 3
+        [classification.augmentation.Pad]
+            enable = 0
+            padding = 0
+            fill = [120,120,120]
+            padding_mode = "constant"
+        [classification.augmentation.Resize]
+            enable = 0
+            resize = [250,250]
+        [classification.augmentation.RandomPerspective]
+            enable = 0
+            distortion_scale = 0.1
+            p = 5.0
+            fill = 0
+        [classification.augmentation.RandomRotation]
+            enable = 0
+            degrees = 2
+            expand = false
+            center = [0,0]
+            fill = 0
+        [classification.augmentation.ElasticTransform]
+            enable = 0
+            alpha = 0.1
+            sigma = 0.1
+            fill = 0
+        [classification.augmentation.GaussianBlur]
+            enable = 1
+            kernel_size = 3
+            sigma = 1.0
+        [classification.augmentation.AdjustSharpness]
+            enable = 1
+            sharpness = 15.0
+            p = 50.0
+        [classification.augmentation.VerticalFlip]
+            enable = 1
+            probability = 50.0
+
+
+[YOLOdetection]
+    [YOLOdetection.config]
+        # Train settings -------------------------------------------------------------------------------------------------------
+        model = "./runs/detect/train/train3/weights/best.pt" # (str, optional) path to model file, i.e. yolov8n.pt, yolov8n.yaml
+        data = "datasets/glass_quality_detection_dataset/data.yaml" # "datasets/glass_quality_detection_dataset/data.yaml" # (str, optional) path to data file, i.e. coco8.yaml
+    [YOLOdetection.train]
+        epochs = 100 # (int) number of epochs to train for
+        patience = 100 # (int) epochs to wait for no observable improvement for early stopping of training
+        batch = 8 # (int) number of images per batch (-1 for AutoBatch)
+        imgsz = 736 # (int | list) input images size as int for train and val modes, or list[w,h] for predict and export modes
+        save = true # (bool) save train checkpoints and predict results
+        save_period = -1 # (int) Save checkpoint every x epochs (disabled if < 1)
+        cache = false # (bool) true/ram, disk or false. Use cache for data loading
+        device = 0 # (int | str | list, optional) device to run on, i.e. cuda device=0 or device=0,1,2,3 or device=cpu
+        workers = 4 # (int) number of worker threads for data loading (per RANK if DDP)
+        project = "runs/detect/train"# (str, optional) project name - save directory
+        exist_ok = false # (bool) whether to overwrite existing experiment
+        pretrained = true # (bool | str) whether to use a pretrained model (bool) or a model to load weights from (str)
+        optimizer = "auto" # (str) optimizer to use, choices=[SGD, Adam, Adamax, AdamW, NAdam, RAdam, RMSProp, auto]
+        verbose = true # (bool) whether to print verbose output
+        seed = 0 # (int) random seed for reproducibility
+        deterministic = true # (bool) whether to enable deterministic mode
+        single_cls = false # (bool) train multi-class data as single-class
+        rect = false # (bool) rectangular training if mode='train' or rectangular validation if mode='val'
+        cos_lr = false # (bool) use cosine learning rate scheduler
+        close_mosaic = 10 # (int) disable mosaic augmentation for final epochs (0 to disable)
+        resume = false # (bool) resume training from last checkpoint
+        amp = true # (bool) Automatic Mixed Precision (AMP) training, choices=[true, false], true runs AMP check
+        fraction = 1.0 # (float) dataset fraction to train on (default is 1.0, all images in train set)
+        profile = false # (bool) profile ONNX and TensorRT speeds during training for loggers
+        freeze = false # (int | list, optional) freeze first n layers, or freeze list of layer indices during training
+        multi_scale = false # (bool) Whether to use multiscale during training
+    [YOLOdetection.segmentation]
+        # Segmentation
+        overlap_mask = true # (bool) masks should overlap during training (segment train only)
+        mask_ratio = 4 # (int) mask downsample ratio (segment train only)
+    [YOLOdetection.classification]
+        # Classification
+        dropout = 0.0 # (float) use dropout regularization (classify train only)
+    [YOLOdetection.val_test]
+        # Val/Test settings ----------------------------------------------------------------------------------------------------
+        val = true # (bool) validate/test during training
+        split = "val" # (str) dataset split to use for validation, i.e. 'val', 'test' or 'train'
+        save_json = true # (bool) save results to JSON file
+        save_hybrid = false # (bool) save hybrid version of labels (labels + additional predictions)
+        conf = 0.25 # (float, optional) object confidence threshold for detection (default 0.25 predict, 0.001 val)
+        iou = 0.7 # (float) intersection over union (IoU) threshold for NMS
+        max_det = 300 # (int) maximum number of detections per image
+        half = false # (bool) use half precision (FP16)
+        dnn = false # (bool) use OpenCV DNN for ONNX inference
+        plots = true # (bool) save plots and images during train/val
+    [YOLOdetection.predict]
+        # Predict settings -----------------------------------------------------------------------------------------------------
+        source = "./datasets/glass_quality_detection_dataset/infer" # (str, optional) source directory for images or videos
+        vid_stride = 1 # (int) video frame-rate stride
+        stream_buffer = false # (bool) buffer all streaming frames (true) or return the most recent frame (false)
+        visualize = true # (bool) visualize model features
+        augment = false # (bool) apply image augmentation to prediction sources
+        agnostic_nms = false # (bool) class-agnostic NMS
+        classes = false # (int | list[int], optional) filter results by class, i.e. classes=0, or classes=[0,2,3]
+        retina_masks = false # (bool) use high-resolution segmentation masks
+        embed = false # (list[int], optional) return feature vectors/embeddings from given layers
+    [YOLOdetection.visualize]
+        # Visualize settings ---------------------------------------------------------------------------------------------------
+        show = false # (bool) show predicted images and videos if environment allows
+        save_frames = true # (bool) save predicted individual video frames
+        save_txt = false # (bool) save results as .txt file
+        save_conf = true # (bool) save results with confidence scores
+        save_crop = false # (bool) save cropped images with results
+        show_labels = true # (bool) show prediction labels, i.e. 'person'
+        show_conf = true # (bool) show prediction confidence, i.e. '0.99'
+        show_boxes = true # (bool) show prediction boxes
+    [YOLOdetection.export]
+        # Export settings ------------------------------------------------------------------------------------------------------
+        format = "torchscript" # (str) format to export to, choices at https =//docs.ultralytics.com/modes/export/#export-formats
+        keras = false # (bool) use Kera=s
+        optimize = false # (bool) TorchScript = optimize for mobile
+        int8 = false # (bool) CoreML/TF INT8 quantization
+        dynamic = false # (bool) ONNX/TF/TensorRT = dynamic axes
+        simplify = false # (bool) ONNX = simplify model
+        opset = false # (int, optional) ONNX = opset version
+        workspace = 4 # (int) TensorRT = workspace size (GB)
+        nms = false # (bool) CoreML = add NMS
+    [YOLOdetection.hyperparameter]
+        # Hyperparameters ------------------------------------------------------------------------------------------------------
+        lr0 = 0.01 # (float) initial learning rate (i.e. SGD=1E-2, Adam=1E-3)
+        lrf = 0.01 # (float) final learning rate (lr0 * lrf)
+        momentum = 0.937 # (float) SGD momentum/Adam beta1
+        weight_decay = 0.0005 # (float) optimizer weight decay 5e-4
+        warmup_epochs = 3.0 # (float) warmup epochs (fractions ok)
+        warmup_momentum = 0.8 # (float) warmup initial momentum
+        warmup_bias_lr = 0.1 # (float) warmup initial bias lr
+        box = 7.5 # (float) box loss gain
+        cls = 0.5 # (float) cls loss gain (scale with pixels)
+        dfl = 1.5 # (float) dfl loss gain
+        pose = 12.0 # (float) pose loss gain
+        kobj = 1.0 # (float) keypoint obj loss gain
+        label_smoothing = 0.0 # (float) label smoothing (fraction)
+        nbs = 64 # (int) nominal batch size
+        hsv_h = 0.015 # (float) image HSV-Hue augmentation (fraction)
+        hsv_s = 0.7 # (float) image HSV-Saturation augmentation (fraction)
+        hsv_v = 0.4 # (float) image HSV-Value augmentation (fraction)
+        degrees = 0.0 # (float) image rotation (+/- deg)
+        translate = 0.1 # (float) image translation (+/- fraction)
+        scale = 0.5 # (float) image scale (+/- gain)
+        shear = 0.0 # (float) image shear (+/- deg)
+        perspective = 0.0 # (float) image perspective (+/- fraction), range 0-0.001
+        flipud = 0.0 # (float) image flip up-down (probability)
+        fliplr = 0.5 # (float) image flip left-right (probability)
+        bgr = 0.0 # (float) image channel BGR (probability)
+        mosaic = 1.0 # (float) image mosaic (probability)
+        mixup = 0.0 # (float) image mixup (probability)
+        copy_paste = 0.0 # (float) segment copy-paste (probability)
+        auto_augment = "randaugment" # (str) auto augmentation policy for classification (randaugment, autoaugment, augmix)
+        erasing = 0.4 # (float) probability of random erasing during classification training (0-0.9), 0 means no erasing, must be less than 1.0.
+        crop_fraction = 1.0 # (float) image crop fraction for classification (0.1-1), 1.0 means no crop, must be greater than 0.
+
+        # Custom config.yaml ---------------------------------------------------------------------------------------------------
+        cfg = "" # (str, optional) for overriding defaults.yaml
