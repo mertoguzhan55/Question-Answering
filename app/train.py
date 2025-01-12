@@ -59,6 +59,16 @@ class LlamaTrainer():
 
 
         tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
+        
+        special_tokens_list = ["<project>", "<company>"]
+
+        special_tokens_dict = {
+            "additional_special_tokens": special_tokens_list
+        }
+        tokenizer.add_special_tokens(special_tokens_dict)
+
+        
+
         tokenizer.pad_token = tokenizer.eos_token
         tokenizer.padding_side = self.padding_side
 
@@ -74,12 +84,18 @@ class LlamaTrainer():
             quantization_config = bnb_config,
             device_map = self.device_map,
         )
+        model.resize_token_embeddings(len(tokenizer))
+
+        
+
+        self.logger.info(f"Llama layers: {model}")
 
         peft_config = LoraConfig(
             lora_alpha = self.lora_alpha,
             lora_dropout = self.lora_dropout,
             r = self.lora_rank,
             bias = self.bias,
+            target_modules= ["q_proj","v_proj","o_proj"],
             task_type = self.task_type,
         )
 
